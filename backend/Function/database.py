@@ -1,0 +1,32 @@
+import psycopg2
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+class db:
+    def initialize_connection():
+        print("HERE")
+        DATABASE_HOST = os.getenv("DATABASE_HOST")
+        DATABASE_USER = os.getenv("DATABASE_USER")
+        DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD")
+        DATABASE_ROOT_NAME = os.getenv("DATABASE_ROOT_NAME")
+        DATABASE_PORT = os.getenv("DATABASE_PORT")
+        conn = psycopg2.connect(
+            host=DATABASE_HOST,
+            database=DATABASE_ROOT_NAME,
+            user=DATABASE_USER,
+            password=DATABASE_PASSWORD,
+            port=DATABASE_PORT,
+        )
+        cur = conn.cursor()
+        cur.execute("ROLLBACK")
+        conn.commit()
+        print("YES")
+        return conn, cur
+
+    def get_price_from_database(company_id, cur):
+        cur.execute(f"""
+            SELECT price_list from prices WHERE company_id='{company_id}';
+            """)
+        price = list(cur.fetchone()[0])
+        return price
